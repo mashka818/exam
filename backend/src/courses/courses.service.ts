@@ -9,7 +9,6 @@ export class CoursesService {
   constructor(private prisma: PrismaService) {}
 
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
-    // Проверка уникальности названия
     const existingCourse = await this.prisma.course.findUnique({
       where: { name: createCourseDto.name },
     });
@@ -44,9 +43,8 @@ export class CoursesService {
   }
 
   async update(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
-    await this.findOne(id); // Проверка существования
+    await this.findOne(id); 
 
-    // Если меняется название, проверяем уникальность
     if (updateCourseDto.name) {
       const existingCourse = await this.prisma.course.findUnique({
         where: { name: updateCourseDto.name },
@@ -64,11 +62,12 @@ export class CoursesService {
   }
 
   async delete(id: string): Promise<Course> {
-    await this.findOne(id); // Проверка существования
+    await this.findOne(id); 
 
     return this.prisma.course.delete({
       where: { id },
     });
   }
 }
+
 
