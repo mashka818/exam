@@ -54,18 +54,19 @@ export class ReviewsController {
     return this.reviewsService.create(user.userId, createReviewDto);
   }
 
-  @Get()
+  @Get('latest/:limit')
+  @ApiParam({ name: 'limit', description: 'Количество последних отзывов' })
   @ApiOperation({ 
-    summary: 'Получить все отзывы',
-    description: 'Получить список всех отзывов (доступно всем пользователям)'
+    summary: 'Получить последние отзывы',
+    description: 'Получить список последних отзывов для отображения на главной странице'
   })
   @ApiResponse({ 
     status: 200, 
-    description: 'Список отзывов',
+    description: 'Список последних отзывов',
     type: [ReviewResponseDto]
   })
-  async findAll() {
-    return this.reviewsService.findAll();
+  async findLatest(@Param('limit') limit: string) {
+    return this.reviewsService.findLatest(parseInt(limit));
   }
 
   @Get('my')
@@ -86,6 +87,20 @@ export class ReviewsController {
   })
   async findMy(@CurrentUser() user: any) {
     return this.reviewsService.findByUserId(user.userId);
+  }
+
+  @Get()
+  @ApiOperation({ 
+    summary: 'Получить все отзывы',
+    description: 'Получить список всех отзывов (доступно всем пользователям)'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Список отзывов',
+    type: [ReviewResponseDto]
+  })
+  async findAll() {
+    return this.reviewsService.findAll();
   }
 
   @Get(':id')

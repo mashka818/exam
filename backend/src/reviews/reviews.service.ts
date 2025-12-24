@@ -53,6 +53,29 @@ export class ReviewsService {
     });
   }
 
+  async findLatest(limit: number): Promise<Review[]> {
+    return this.prisma.review.findMany({
+      take: limit,
+      include: {
+        user: {
+          select: {
+            id: true,
+            login: true,
+            fullName: true,
+            email: true,
+            phone: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
   async findByUserId(userId: string): Promise<Review[]> {
     return this.prisma.review.findMany({
       where: { userId },

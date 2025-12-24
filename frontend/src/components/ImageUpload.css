@@ -1,0 +1,94 @@
+.image-upload {
+  width: 100%;
+}
+
+.upload-area {
+  border: 2px dashed var(--gray-light);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--black);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-area:hover {
+  border-color: var(--primary);
+  background: var(--gray-light);
+}
+
+.upload-area.drag-active {
+  border-color: var(--primary);
+  background: rgba(0, 255, 136, 0.05);
+  transform: scale(1.02);
+}
+
+.upload-prompt {
+  color: var(--text-secondary);
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.upload-prompt p {
+  margin: 0.5rem 0;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.upload-prompt small {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.preview {
+  position: relative;
+  width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0.5rem;
+}
+
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  color: var(--white);
+}
+
+.preview:hover .preview-overlay {
+  opacity: 1;
+}
+
+.preview-overlay svg {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.preview-overlay p {
+  margin: 0;
+}
+
+

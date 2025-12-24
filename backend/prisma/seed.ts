@@ -4,43 +4,45 @@ import * as argon2 from 'argon2';
 const prisma = new PrismaClient();
 
 async function main() {
-const courses = [
+  const courses = [
     {
       name: 'Основы программирования на Python',
       teacher: 'Иванов Иван Иванович',
       description: 'Изучите основы Python: синтаксис, структуры данных, ООП и многое другое',
-      image: 'https://example.com/python.jpg',
+      image: null, // Изображения нужно загружать через админ-панель
     },
     {
       name: 'Web-разработка на JavaScript',
       teacher: 'Петрова Мария Сергеевна',
       description: 'Создание современных веб-приложений с использованием JavaScript, React и Node.js',
-      image: 'https://example.com/javascript.jpg',
+      image: null,
     },
     {
       name: 'Машинное обучение и AI',
       teacher: 'Смирнов Алексей Петрович',
       description: 'Введение в машинное обучение, нейронные сети и искусственный интеллект',
-      image: 'https://example.com/ml.jpg',
+      image: null,
     },
     {
       name: 'DevOps и облачные технологии',
       teacher: 'Козлова Елена Дмитриевна',
       description: 'Docker, Kubernetes, CI/CD и работа с облачными платформами',
-      image: 'https://example.com/devops.jpg',
+      image: null,
     },
     {
       name: 'Базы данных и SQL',
       teacher: 'Новиков Дмитрий Александрович',
       description: 'Проектирование баз данных, SQL запросы, оптимизация и администрирование',
-      image: 'https://example.com/sql.jpg',
+      image: null,
     },
   ];
 
   for (const course of courses) {
     await prisma.course.upsert({
       where: { name: course.name },
-      update: {},
+      update: {
+        // Не обновляем существующие данные, только создаем новые курсы
+      },
       create: course,
     });
   }
@@ -88,6 +90,48 @@ const courses = [
     email: testUser.email,
     role: testUser.role,
   });
+
+  // Создаем тестовые отзывы
+  const reviews = [
+    {
+      text: 'Отличный курс! Получил много практических навыков и уверенность в своих силах. Преподаватель очень доступно объясняет сложные темы.',
+      rating: 5,
+      userId: testUser.id,
+    },
+    {
+      text: 'Курс превзошел все мои ожидания. Материал структурирован, много практики. Рекомендую всем начинающим!',
+      rating: 5,
+      userId: testUser.id,
+    },
+    {
+      text: 'Очень понравилась подача материала и практические задания. Спасибо за качественное обучение!',
+      rating: 4,
+      userId: testUser.id,
+    },
+    {
+      text: 'Хороший курс для начинающих. Преподаватель всегда на связи, отвечает на все вопросы.',
+      rating: 5,
+      userId: testUser.id,
+    },
+    {
+      text: 'Отличная программа обучения. Получил сертификат и сразу нашел работу по специальности!',
+      rating: 5,
+      userId: testUser.id,
+    },
+    {
+      text: 'Курс очень информативный, много нового узнал. Буду рекомендовать друзьям.',
+      rating: 4,
+      userId: testUser.id,
+    },
+  ];
+
+  for (const review of reviews) {
+    await prisma.review.create({
+      data: review,
+    });
+  }
+
+  console.log('Создано отзывов:', reviews.length);
 }
 
 main()

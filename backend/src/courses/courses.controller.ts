@@ -6,14 +6,21 @@ import {
   Param, 
   Patch, 
   Delete,
-  UseGuards 
+  UseGuards,
+  UseInterceptors,
+  UploadedFile
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { 
   ApiTags, 
   ApiOperation, 
   ApiResponse, 
   ApiBearerAuth,
-  ApiParam 
+  ApiParam,
+  ApiConsumes,
+  ApiBody
 } from '@nestjs/swagger';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -32,32 +39,52 @@ export class CoursesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth('JWT-auth')
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './uploads/courses',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+        cb(null, `${randomName}${extname(file.originalname)}`);
+      },
+    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+        return cb(new Error('Только изображения разрешены!'), false);
+      }
+      cb(null, true);
+    },
+  }))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        teacher: { type: 'string' },
+        description: { type: 'string' },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @ApiOperation({ 
     summary: 'Создать курс (только для администратора)',
-    description: 'Администратор может создать новый курс в системе'
+    description: 'Администратор может создать новый курс в системе. Можно загрузить изображение.'
   })
   @ApiResponse({ 
     status: 201, 
     description: 'Курс успешно создан',
     type: CourseResponseDto
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Ошибка валидации данных' 
-  })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Необходима авторизация' 
-  })
-  @ApiResponse({ 
-    status: 403, 
-    description: 'Недостаточно прав доступа' 
-  })
-  @ApiResponse({ 
-    status: 409, 
-    description: 'Курс с таким названием уже существует' 
-  })
-  async create(@Body() createCourseDto: CreateCourseDto) {
+  async create(
+    @Body() createCourseDto: CreateCourseDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (file) {
+      createCourseDto.image = `/uploads/courses/${file.filename}`;
+    }
     return this.coursesService.create(createCourseDto);
   }
 
@@ -98,6 +125,36 @@ export class CoursesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @ApiBearerAuth('JWT-auth')
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './uploads/courses',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+        cb(null, `${randomName}${extname(file.originalname)}`);
+      },
+    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/)) {
+        return cb(new Error('Только изображения разрешены!'), false);
+      }
+      cb(null, true);
+    },
+  }))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        teacher: { type: 'string' },
+        description: { type: 'string' },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @ApiParam({ name: 'id', description: 'ID курса' })
   @ApiOperation({ 
     summary: 'Изменить курс (только для администратора)',
@@ -127,7 +184,11 @@ export class CoursesController {
   async update(
     @Param('id') id: string,
     @Body() updateCourseDto: UpdateCourseDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
+    if (file) {
+      updateCourseDto.image = `/uploads/courses/${file.filename}`;
+    }
     return this.coursesService.update(id, updateCourseDto);
   }
 
@@ -160,5 +221,8 @@ export class CoursesController {
     return this.coursesService.delete(id);
   }
 }
+
+
+
 
 
