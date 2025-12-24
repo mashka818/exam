@@ -1,11 +1,26 @@
 {
-  "name": "exam",
+  "name": "korochki-est",
   "version": "1.0.0",
-  "description": "",
+  "description": "Портал онлайн курсов дополнительного профессионального образования",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install:backend": "cd backend && npm install",
+    "backend:dev": "cd backend && npm run start:dev",
+    "backend:build": "cd backend && npm run build",
+    "backend:prod": "cd backend && npm run start:prod",
+    "prisma:setup": "cd backend && npm run prisma:generate && npm run prisma:migrate && npm run prisma:seed",
+    "setup": "npm run install:backend && npm run prisma:setup",
+    "dev": "npm run backend:dev"
   },
+  "keywords": [
+    "nestjs",
+    "typescript",
+    "prisma",
+    "postgresql",
+    "swagger",
+    "education",
+    "courses"
+  ],
   "author": "",
   "license": "ISC"
 }
