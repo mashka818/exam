@@ -1,0 +1,13 @@
+{
+  "name": "de-exam-work",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Пример package.json (основной способ — npx init, см. EXAM_COMMANDS.txt)",
+  "scripts": {
+    "postinstall": "exam-de-unpack --here",
+    "setup": "npm install && npm run install:all"
+  },
+  "dependencies": {
+    "@mashka818/exam-de-template": "1.0.0"
+  }
+}
