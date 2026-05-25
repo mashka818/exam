@@ -86,3 +86,18 @@ export function validateRequest(body) {
 
   return errors;
 }
+
+// =============================================================================
+// ОТЗЫВЫ: раскомментируйте функцию + import в server/routes/requests.js
+// =============================================================================
+// /** POST /api/requests/:id/review */
+// export function validateReview({ text, rating }) {
+//   const errors = {};
+//   if (!text?.trim()) errors.text = 'Текст отзыва обязателен';
+//   else if (text.trim().length < 10) errors.text = 'Отзыв не короче 10 символов';
+//   if (rating != null && rating !== '') {
+//     const n = Number(rating);
+//     if (!Number.isInteger(n) || n < 1 || n > 5) errors.rating = 'Оценка от 1 до 5';
+//   }
+//   return errors;
+// }

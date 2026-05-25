@@ -70,7 +70,9 @@ export const api = {
   // --- Заявки пользователя → server/routes/requests.js (п.3 mine, п.4 POST) ---
   getMyRequests: () => request('/requests/mine'),
   createRequest: (body) => request('/requests', { method: 'POST', body: JSON.stringify(body) }),
-  // БАНКЕТАМ.НЕТ: postReview: (id, body) => request(`/requests/${id}/review`, { method: 'POST', body: JSON.stringify(body) }),
+  // ОТЗЫВЫ (п.3): раскомментируйте + schema.sql + server/routes/requests.js + RequestsPage.jsx
+  // postReview: (id, body) =>
+  //   request(`/requests/${id}/review`, { method: 'POST', body: JSON.stringify(body) }),
 
   // --- Админ → server/routes/admin.js (п.5) ---
   // params.status: 'all' | 'new' | 'in_progress' | 'completed' | 'cancelled'

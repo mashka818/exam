@@ -62,6 +62,20 @@ export function validateRequestForm(form) {
   return errors;
 }
 
+// =============================================================================
+// ОТЗЫВЫ: раскомментируйте (дубль server/utils/validation.js) + RequestsPage.jsx
+// =============================================================================
+// export function validateReviewForm({ text, rating }) {
+//   const errors = {};
+//   if (!text?.trim()) errors.text = 'Текст отзыва обязателен';
+//   else if (text.trim().length < 10) errors.text = 'Отзыв не короче 10 символов';
+//   if (rating != null && rating !== '') {
+//     const n = Number(rating);
+//     if (!Number.isInteger(n) || n < 1 || n > 5) errors.rating = 'Оценка от 1 до 5';
+//   }
+//   return errors;
+// }
+
 /** Маска телефона при вводе — можно оставить для любой темы с тем же форматом */
 export function formatPhoneInput(value) {
   const digits = value.replace(/\D/g, '').slice(0, 11);

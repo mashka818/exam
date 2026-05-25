@@ -56,3 +56,17 @@ CREATE TABLE IF NOT EXISTS requests (
 
 CREATE INDEX IF NOT EXISTS idx_requests_user_id ON requests(user_id);
 CREATE INDEX IF NOT EXISTS idx_requests_status ON requests(status);
+
+-- =============================================================================
+-- ОТЗЫВЫ (п.3 личный кабинет): раскомментируйте блок → npm run db:init
+-- Один отзыв на заявку; форма на фронте, если админ уже менял статус (не new)
+-- =============================================================================
+-- CREATE TABLE IF NOT EXISTS reviews (
+--   id SERIAL PRIMARY KEY,
+--   request_id INTEGER NOT NULL UNIQUE REFERENCES requests(id) ON DELETE CASCADE,
+--   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+--   text TEXT NOT NULL,
+--   rating INTEGER CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5)),
+--   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+-- );
+-- CREATE INDEX IF NOT EXISTS idx_reviews_request_id ON reviews(request_id);

@@ -40,8 +40,12 @@
 
 ### п.3 Личный кабинет (`/requests`)
 - `RequestsPage.jsx` — «история бронирований», **слайдер** (можно вынести компонент с лендинга)
-- **ДОБАВИТЬ:** таблица/поле `reviews` в БД, форма отзыва если статус ≠ `new` (после действия админа)
-- `server/db/schema.sql` — комментарий про `reviews`
+- **Отзывы:** код уже в проекте, но **закомментирован** — ищите метку **`ОТЗЫВЫ`** и раскомментируйте по порядку:
+  1. `server/db/schema.sql` (таблица `reviews`) → `npm run db:init`
+  2. `server/utils/validation.js` + `client/src/utils/validation.js` (`validateReview`)
+  3. `server/routes/requests.js` (JOIN в GET `/mine`, `mapRequest`, POST `/:id/review`)
+  4. `client/src/api.js` (`postReview`)
+  5. `client/src/pages/RequestsPage.jsx` (`RequestReviewBlock` + вызов в списке)
 
 ### п.4 Оформление заявки (`/requests/form`)
 - `RequestFormPage.jsx` — select помещений, дата **ДД.ММ.ГГГГ**, оплата

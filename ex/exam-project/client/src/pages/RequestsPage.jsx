@@ -29,6 +29,7 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout.jsx';
 import PageImage from '../components/PageImage.jsx';
 import { api } from '../api.js';
+// ОТЗЫВЫ: раскомментируйте → import { validateReviewForm } from '../utils/validation.js';
 
 const statusColors = {
   new: 'bg-amber-100 text-amber-800',
@@ -37,18 +38,116 @@ const statusColors = {
   cancelled: 'bg-red-100 text-red-800',
 };
 
+// =============================================================================
+// ОТЗЫВЫ (п.3): раскомментируйте компонент + вызов <RequestReviewBlock /> в списке ниже
+// Порядок: schema.sql → npm run db:init → requests.js → api.js → этот файл
+// =============================================================================
+/*
+function RequestReviewBlock({ request, onSaved }) {
+  const [text, setText] = useState('');
+  const [rating, setRating] = useState('');
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  if (request.status === 'new') return null;
+
+  if (request.review) {
+    return (
+      <div className="mt-3 pt-3 border-t border-slate-200">
+        <p className="text-xs font-semibold text-teal-800 mb-1">Ваш отзыв</p>
+        {request.review.rating != null && (
+          <p className="text-sm text-amber-600 mb-1">Оценка: {request.review.rating} / 5</p>
+        )}
+        <p className="text-sm text-slate-700">{request.review.text}</p>
+      </div>
+    );
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const errs = validateReviewForm({ text, rating });
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
+    setErrors({});
+    setSubmitError('');
+    setSubmitting(true);
+    try {
+      const updated = await api.postReview(request.id, {
+        text,
+        rating: rating === '' ? null : Number(rating),
+      });
+      onSaved(updated);
+      setText('');
+      setRating('');
+    } catch (err) {
+      setSubmitError(err.data?.message || err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+      <p className="text-xs font-semibold text-teal-800">Оставить отзыв</p>
+      <textarea
+        className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.text ? 'border-red-400' : 'border-slate-300'}`}
+        rows={3}
+        placeholder="Опишите впечатления от услуги"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      {errors.text && <p className="text-xs text-red-600">{errors.text}</p>}
+      <select
+        className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.rating ? 'border-red-400' : 'border-slate-300'}`}
+        value={rating}
+        onChange={(e) => setRating(e.target.value)}
+      >
+        <option value="">Оценка (необязательно)</option>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <option key={n} value={n}>
+            {n} звёзд
+          </option>
+        ))}
+      </select>
+      {errors.rating && <p className="text-xs text-red-600">{errors.rating}</p>}
+      {submitError && <p className="text-xs text-red-600">{submitError}</p>}
+      <button
+        type="submit"
+        disabled={submitting}
+        className="rounded-lg bg-teal-600 text-white text-sm px-4 py-2 hover:bg-teal-700 disabled:opacity-60"
+      >
+        {submitting ? 'Отправка…' : 'Отправить отзыв'}
+      </button>
+    </form>
+  );
+}
+*/
+
 export default function RequestsPage() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
+    loadRequests();
+  }, []);
+
+  function loadRequests() {
+    setLoading(true);
     api
       .getMyRequests()
       .then(setRequests)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  // ОТЗЫВЫ: раскомментируйте — обновление одной заявки после отзыва
+  // function handleReviewSaved(updated) {
+  //   setRequests((list) => list.map((r) => (r.id === updated.id ? updated : r)));
+  // }
 
   return (
     <Layout variant="dashboard">
@@ -110,6 +209,7 @@ export default function RequestsPage() {
               {r.cancelReason && (
                 <p className="text-xs text-red-600 mt-2">Причина отмены: {r.cancelReason}</p>
               )}
+              {/* ОТЗЫВЫ: <RequestReviewBlock request={r} onSaved={handleReviewSaved} /> */}
             </li>
           ))}
         </ul>

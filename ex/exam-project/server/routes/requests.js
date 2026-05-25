@@ -26,6 +26,7 @@ import { Router } from 'express';
 import { pool } from '../db/pool.js';
 import { authRequired } from '../middleware/auth.js';
 import { validateRequest } from '../utils/validation.js';
+// ОТЗЫВЫ: раскомментируйте → import { validateRequest, validateReview } from '../utils/validation.js';
 
 const router = Router();
 
@@ -48,6 +49,18 @@ router.get('/mine', authRequired, async (req, res) => {
        ORDER BY r.created_at DESC`,
       [req.user.id]
     );
+    // ОТЗЫВЫ: замените запрос выше на вариант с JOIN (раскомментируйте):
+    // const { rows } = await pool.query(
+    //   `SELECT r.*, st.name AS service_name, u.full_name AS user_full_name,
+    //           rev.text AS review_text, rev.rating AS review_rating, rev.created_at AS review_created_at
+    //    FROM requests r
+    //    LEFT JOIN service_types st ON st.id = r.service_type_id
+    //    JOIN users u ON u.id = r.user_id
+    //    LEFT JOIN reviews rev ON rev.request_id = r.id
+    //    WHERE r.user_id = $1
+    //    ORDER BY r.created_at DESC`,
+    //   [req.user.id]
+    // );
     res.json(rows.map(mapRequest));
   } catch (err) {
     console.error(err);
@@ -116,7 +129,72 @@ function mapRequest(row) {
     statusLabel: STATUS_LABELS[row.status] || row.status,
     cancelReason: row.cancel_reason,
     createdAt: row.created_at,
+    // ОТЗЫВЫ: раскомментируйте в mapRequest:
+    // review: row.review_text
+    //   ? {
+    //       text: row.review_text,
+    //       rating: row.review_rating,
+    //       createdAt: row.review_created_at,
+    //     }
+    //   : null,
   };
 }
+
+// =============================================================================
+// ОТЗЫВЫ: раскомментируйте роут + validateReview в validation.js + таблицу reviews
+// POST /api/requests/:id/review — только своя заявка, status !== 'new', один отзыв
+// В ТЗ «только завершённые»: замените проверку на row.status !== 'completed'
+// =============================================================================
+// router.post('/:id/review', authRequired, async (req, res) => {
+//   if (req.user.role === 'admin') {
+//     return res.status(403).json({ message: 'Отзыв оставляет только заказчик' });
+//   }
+//   const requestId = Number(req.params.id);
+//   const { text, rating } = req.body;
+//   const errors = validateReview({ text, rating });
+//   if (Object.keys(errors).length) {
+//     return res.status(400).json({ errors });
+//   }
+//   try {
+//     const existing = await pool.query(
+//       'SELECT id, user_id, status FROM requests WHERE id = $1',
+//       [requestId]
+//     );
+//     if (!existing.rows.length) {
+//       return res.status(404).json({ message: 'Заявка не найдена' });
+//     }
+//     const row = existing.rows[0];
+//     if (row.user_id !== req.user.id) {
+//       return res.status(403).json({ message: 'Нет доступа к этой заявке' });
+//     }
+//     if (row.status === 'new') {
+//       return res.status(400).json({ message: 'Отзыв можно оставить после обработки заявки администратором' });
+//     }
+//     const dup = await pool.query('SELECT id FROM reviews WHERE request_id = $1', [requestId]);
+//     if (dup.rows.length) {
+//       return res.status(400).json({ message: 'Отзыв по этой заявке уже оставлен' });
+//     }
+//     const ratingVal = rating != null && rating !== '' ? Number(rating) : null;
+//     await pool.query(
+//       `INSERT INTO reviews (request_id, user_id, text, rating)
+//        VALUES ($1, $2, $3, $4)`,
+//       [requestId, req.user.id, text.trim(), ratingVal]
+//     );
+//     const { rows } = await pool.query(
+//       `SELECT r.*, st.name AS service_name, u.full_name AS user_full_name,
+//               rev.text AS review_text, rev.rating AS review_rating, rev.created_at AS review_created_at
+//        FROM requests r
+//        LEFT JOIN service_types st ON st.id = r.service_type_id
+//        JOIN users u ON u.id = r.user_id
+//        LEFT JOIN reviews rev ON rev.request_id = r.id
+//        WHERE r.id = $1`,
+//       [requestId]
+//     );
+//     res.status(201).json(mapRequest(rows[0]));
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Ошибка сервера' });
+//   }
+// });
 
 export default router;
